@@ -7,7 +7,7 @@ using System.IO;
 
 namespace CommonLibrary
 {
-    class LogHelper
+    public class LogHelper
     {
         private static string LogPath = System.AppDomain.CurrentDomain.BaseDirectory + @"\Log";
         private static string sLogFullName = LogPath + @"\" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
