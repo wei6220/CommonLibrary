@@ -7,24 +7,52 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections;
 
+
 namespace CommonLibrary.DBUtility
 {
-    public class DbHelper
+    public class DbHelper 
     {
+        private string _ConnectionString;
         public DbHelper()
         {
-            _ConnectionString = IniHelper.getConnectionString(IniHelper.getIniFileFullName(), "database");
-            //_ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=InsydeBIOSConfigurationDB;Integrated Security=True";
+            _ConnectionString = getConnectionString("DATABASE");
         }
         public DbHelper(string connectionString)
         {
             _ConnectionString = connectionString;
         }
 
-        private string _ConnectionString;
-        public string getConnectionString()
+        public static string getConnectionString(string section)
         {
-            return _ConnectionString;
+            try
+            {
+                // Data Source =.\SQLEXPRESS; Initial Catalog = InsydeBIOSConfigurationDB; Integrated Security = True
+
+                //by .ini
+                //string server = IniHelper.getIniValue(section, "servername", IniHelper.getIniFilePath());
+                //string db = IniHelper.getIniValue(section, "datasource", IniHelper.getIniFilePath());
+                //string userid = IniHelper.getIniValue(section, "userid", IniHelper.getIniFilePath());
+                //string password = IniHelper.getIniValue(section, "Password", IniHelper.getIniFilePath());
+
+                //by .xml
+                XmlHelper xmlHelper = new XmlHelper();
+                IList list = xmlHelper.Read(IniHelper.getIniFilePath(), "SETTINGS/" + section);
+                string server = xmlHelper.Find(list, "servername").ToString();
+                string db = xmlHelper.Find(list, "datasource").ToString();
+                string userid = xmlHelper.Find(list, "userid").ToString();
+                string password = xmlHelper.Find(list, "Password").ToString();
+
+                return @"Data Source =" + server
+                    + "; Initial Catalog = " + db
+                    + "; Integrated Security = false;User ID = " + userid
+                    + "; Password = '" + password + "';";
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write("[DbHelper] getConnectionString error!!");
+                throw new Exception(ex.Message);
+            }
         }
 
         public int ExecuteSql(string SQLString, List<IDbDataParameter> SqlParams)
@@ -116,10 +144,12 @@ namespace CommonLibrary.DBUtility
                 }
                 catch (Exception ex)
                 {
+                    LogHelper.Write("[DbHelper] QuerySql error!!");
                     throw new Exception(ex.Message);
                 }
 
             }
         }
+
     }
 }

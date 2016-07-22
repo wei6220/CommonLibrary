@@ -11,42 +11,36 @@ namespace CommonLibrary
 {
     public class IniHelper
     {
+        private static string _iniPath = "IniPath";
+
+
         public static string getConfigSetting(string key)
         {
             return ConfigurationManager.AppSettings[key];
         }
 
+        public static string getIniFilePath()
+        {
+            return getConfigSetting(_iniPath);
+        }
+        public static string getIniFilePath(string appKey)
+        {
+            return getConfigSetting(appKey);
+        }
+
+        #region #取.ini資料
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
 
-        public static string getIniFileFullName()
+        public static string getIniValue(string section, string key, string path)
         {
-            return getConfigSetting("IniPath");
-        }
-
-        public static string getIniValue(string path, string section, string key)
-        {
-            StringBuilder output = new StringBuilder();
+            StringBuilder output = new StringBuilder(255);
             GetPrivateProfileString(section, key, "", output, 255, path);
             return output.ToString();
         }
-
-        public static string getConnectionString(string path, string section)
-        {
-            try
-            {
-                // Data Source =.\SQLEXPRESS; Initial Catalog = InsydeBIOSConfigurationDB; Integrated Security = True
-                string source = getIniValue(path, section, "servername");
-                string iniCatalog = getIniValue(path, section, "datasource");
-                return @"Data Source =" + source + "; Initial Catalog = " + iniCatalog + "; Integrated Security = True";
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+        #endregion
 
     }
 }

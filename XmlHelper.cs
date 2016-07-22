@@ -22,11 +22,11 @@ namespace CommonLibrary
             }
             catch (Exception)
             {
-                LogHelper.Write("[MainForm]Xml file load error!!");
+                LogHelper.Write("[XmlHelper]Xml file load error!!");
             }
             return doc.InnerXml;
         }
-
+       
         public IList Read(string Path)
         {
             return Read(Path, null);
@@ -40,14 +40,14 @@ namespace CommonLibrary
             {
                 doc.Load(Path);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogHelper.Write("[MainForm]Xml file load error!!");
+                LogHelper.Write("[XmlHelper]Read error!!");
+                throw new Exception(ex.Message);
             }
             XmlNodeList nodes = doc.SelectNodes(RootNode);
             return (IList)ResolveNode(nodes);
         }
-
         public IList ReadXml(string XmlStr, string XPath)
         {
             if (string.IsNullOrEmpty(XPath))
@@ -57,10 +57,10 @@ namespace CommonLibrary
             {
                 doc.LoadXml(XmlStr);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                LogHelper.Write("[MainForm]Read XmlString error!!");
-                return null;
+                LogHelper.Write("[XmlHelper] ReadXml error!!");
+                throw new Exception(ex.Message);
             }
             XmlNodeList nodes = doc.SelectNodes(XPath);
             return (IList)ResolveNode(nodes);
@@ -78,7 +78,7 @@ namespace CommonLibrary
             }
             catch (Exception)
             {
-                LogHelper.Write("[MainForm]Extract Xml String error!!");
+                LogHelper.Write("[XmlHelper]ExtractXml error!!");
             }
             XmlNodeList nodes = doc.SelectNodes(XPath);
             string xml = "";
@@ -90,6 +90,7 @@ namespace CommonLibrary
         private object ResolveNode(XmlNodeList nodes)
         {
             List<object> NodeList = new List<object>();
+
             foreach (XmlNode node in nodes)
             {
                 //TODO:處理屬性
@@ -105,21 +106,21 @@ namespace CommonLibrary
             return NodeList;
         }
 
-        public IList Find(IList TargetList, string TargetValue)
+        public string Find(IList TargetList, string TargetValue)
         {
             foreach (KeyValuePair<string, object> item in TargetList)
             {
                 if (item.Value.GetType() == typeof(string))
                 {
-                    if (item.Value.ToString() == TargetValue)
-                        return (IList)TargetList;
+                    if (string.Compare(item.Key.ToString(), TargetValue, true) == 0)
+                        return item.Value.ToString();
                 }
                 else
                 {
                     return Find((IList)item.Value, TargetValue);
                 }
             }
-            return new List<object>();
+            return "";
         }
 
     }
