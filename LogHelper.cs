@@ -13,14 +13,14 @@ namespace CommonLibrary
 
         private static string LogFullName = LogPath + @"\" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
 
-        private static object lockMe = new object();
+        private static object lockWrite = new object();
         public static void Write(string sLogStr)
         {
             if (!Directory.Exists(LogPath))
                 Directory.CreateDirectory(LogPath);
 
             StreamWriter sw;
-            lock (lockMe)
+            lock (lockWrite)
             {
                 if (!File.Exists(LogFullName))
                     sw = File.CreateText(LogFullName);

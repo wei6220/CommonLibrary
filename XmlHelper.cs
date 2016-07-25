@@ -48,6 +48,7 @@ namespace CommonLibrary
             XmlNodeList nodes = doc.SelectNodes(RootNode);
             return (IList)ResolveNode(nodes);
         }
+
         public IList ReadXml(string XmlStr, string XPath)
         {
             if (string.IsNullOrEmpty(XPath))

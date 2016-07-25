@@ -10,49 +10,16 @@ using System.Collections;
 
 namespace CommonLibrary.DBUtility
 {
-    public class DbHelper 
+    public class DbHelper : IDbHelper
     {
         private string _ConnectionString;
         public DbHelper()
         {
-            _ConnectionString = getConnectionString("DATABASE");
+            _ConnectionString = IniHelper.getConnectionString("DATABASE", IniHelper.getIniFilePath());
         }
         public DbHelper(string connectionString)
         {
             _ConnectionString = connectionString;
-        }
-
-        public static string getConnectionString(string section)
-        {
-            try
-            {
-                // Data Source =.\SQLEXPRESS; Initial Catalog = InsydeBIOSConfigurationDB; Integrated Security = True
-
-                //by .ini
-                //string server = IniHelper.getIniValue(section, "servername", IniHelper.getIniFilePath());
-                //string db = IniHelper.getIniValue(section, "datasource", IniHelper.getIniFilePath());
-                //string userid = IniHelper.getIniValue(section, "userid", IniHelper.getIniFilePath());
-                //string password = IniHelper.getIniValue(section, "Password", IniHelper.getIniFilePath());
-
-                //by .xml
-                XmlHelper xmlHelper = new XmlHelper();
-                IList list = xmlHelper.Read(IniHelper.getIniFilePath(), "SETTINGS/" + section);
-                string server = xmlHelper.Find(list, "servername").ToString();
-                string db = xmlHelper.Find(list, "datasource").ToString();
-                string userid = xmlHelper.Find(list, "userid").ToString();
-                string password = xmlHelper.Find(list, "Password").ToString();
-
-                return @"Data Source =" + server
-                    + "; Initial Catalog = " + db
-                    + "; Integrated Security = false;User ID = " + userid
-                    + "; Password = '" + password + "';";
-
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Write("[DbHelper] getConnectionString error!!");
-                throw new Exception(ex.Message);
-            }
         }
 
         public int ExecuteSql(string SQLString, List<IDbDataParameter> SqlParams)
@@ -94,6 +61,7 @@ namespace CommonLibrary.DBUtility
                     if (connection.State == ConnectionState.Closed)
                     {
                         connection.Open();
+                        LogHelper.Write(string.Format("Open Connection :{0}", _ConnectionString));
                     }
                    
                     SqlCommand cmd = new SqlCommand(SqlString, connection);
@@ -145,6 +113,7 @@ namespace CommonLibrary.DBUtility
                 catch (Exception ex)
                 {
                     LogHelper.Write("[DbHelper] QuerySql error!!");
+                    LogHelper.Write(ex.Message);
                     throw new Exception(ex.Message);
                 }
 
