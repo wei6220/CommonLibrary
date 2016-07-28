@@ -9,79 +9,108 @@ using System.Xml;
 
 namespace CommonLibrary
 {
+    /// <summary>
+    /// 協助處理Xml讀寫作業
+    /// </summary>
     public class XmlHelper
     {
-        XmlDocument doc;
+        private XmlDocument xmlDoc;
 
+        /// <summary>
+        /// 讀取xml檔案，並轉出xml string
+        /// </summary>
+        /// <param name="Path">檔案路徑</param>
+        /// <returns>xml string</returns>
         public string Load(string Path)
         {
-            doc = new XmlDocument();
+            xmlDoc = new XmlDocument();
             try
             {
-                doc.Load(Path);
+                xmlDoc.Load(Path);
             }
             catch (Exception)
             {
                 LogHelper.Write("[XmlHelper]Xml file load error!!");
             }
-            return doc.InnerXml;
+            return xmlDoc.InnerXml;
         }
-       
+        /// <summary>
+        /// 讀取xml檔案，並轉出list (根結點)
+        /// </summary>
+        /// <param name="Path">檔案路徑</param>
+        /// <returns>list</returns>
         public IList Read(string Path)
         {
             return Read(Path, null);
         }
-        public IList Read(string Path, string RootNode)
+        /// <summary>
+        /// 讀取xml檔案，並轉出list
+        /// </summary>
+        /// <param name="Path">檔案路徑</param>
+        /// <param name="xPath">自訂節點</param>
+        /// <returns>list</returns>
+        public IList Read(string Path, string xPath)
         {
-            if (string.IsNullOrEmpty(RootNode))
-                RootNode = "/";
-            doc = new XmlDocument();
+            if (string.IsNullOrEmpty(xPath))
+                xPath = "/";
+            xmlDoc = new XmlDocument();
             try
             {
-                doc.Load(Path);
+                xmlDoc.Load(Path);
             }
             catch (Exception ex)
             {
-                LogHelper.Write("[XmlHelper]Read error!!");
+                LogHelper.Write("[XmlHelper] Read error!!");
+                LogHelper.Write(ex.Message);
                 throw new Exception(ex.Message);
             }
-            XmlNodeList nodes = doc.SelectNodes(RootNode);
+            XmlNodeList nodes = xmlDoc.SelectNodes(xPath);
             return (IList)ResolveNode(nodes);
         }
-
+        /// <summary>
+        /// 讀取xml字串，並轉出list
+        /// </summary>
+        /// <param name="XmlStr">xml字串</param>
+        /// <param name="XPath">自訂節點</param>
+        /// <returns>list</returns>
         public IList ReadXml(string XmlStr, string XPath)
         {
             if (string.IsNullOrEmpty(XPath))
                 XPath = "/";
-            doc = new XmlDocument();
+            xmlDoc = new XmlDocument();
             try
             {
-                doc.LoadXml(XmlStr);
+                xmlDoc.LoadXml(XmlStr);
             }
             catch (Exception ex)
             {
                 LogHelper.Write("[XmlHelper] ReadXml error!!");
                 throw new Exception(ex.Message);
             }
-            XmlNodeList nodes = doc.SelectNodes(XPath);
+            XmlNodeList nodes = xmlDoc.SelectNodes(XPath);
             return (IList)ResolveNode(nodes);
         }
-
+        /// <summary>
+        /// 讀取xml字串，並轉出xml字串
+        /// </summary>
+        /// <param name="XmlStr">xml字串</param>
+        /// <param name="XPath">自訂節點</param>
+        /// <returns>string</returns>
         public string ExtractXml(string XmlStr, string XPath)
         {
             if (string.IsNullOrEmpty(XPath))
                 return XmlStr;
 
-            doc = new XmlDocument();
+            xmlDoc = new XmlDocument();
             try
             {
-                doc.LoadXml(XmlStr);
+                xmlDoc.LoadXml(XmlStr);
             }
             catch (Exception)
             {
                 LogHelper.Write("[XmlHelper]ExtractXml error!!");
             }
-            XmlNodeList nodes = doc.SelectNodes(XPath);
+            XmlNodeList nodes = xmlDoc.SelectNodes(XPath);
             string xml = "";
             foreach (XmlNode node in nodes)
                 xml += node.InnerXml;

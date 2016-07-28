@@ -13,56 +13,72 @@ namespace CommonLibrary
 {
     public class IniHelper
     {
-        private static string _iniPathKey = "IniPath";
-    
+        private static string _DefaultIniPathKey = "IniPath";
 
-        public static string getConfigSetting(string key)
+        /// <summary>
+        /// 取config appsetting設定值
+        /// </summary>
+        /// <param name="key">key值</param>
+        /// <returns></returns>
+        public static string GetConfigSetting(string key)
         {
             return ConfigurationManager.AppSettings[key];
         }
-
-        public static string getIniFilePath()
+        /// <summary>
+        /// 取得初始設定檔路徑(預設key:IniPath)
+        /// </summary>
+        /// <returns></returns>
+        public static string GetIniFilePath()
         {
-            return getConfigSetting(_iniPathKey);
+            return GetConfigSetting(_DefaultIniPathKey);
         }
-        public static string getIniFilePath(string appKey)
+        /// <summary>
+        /// 取得初始設定檔路徑
+        /// </summary>
+        /// <param name="appKey">自訂key</param>
+        /// <returns></returns>
+        public static string GetIniFilePath(string appKey)
         {
-            return getConfigSetting(appKey);
+            return GetConfigSetting(appKey);
         }
-
-        public static string getConnectionString(string section, string iniPath)
+        /// <summary>
+        /// 取得設定值(預設路徑)
+        /// </summary>
+        /// <param name="section">設定檔section值</param>
+        /// <param name="key">設定檔key值</param>
+        /// <returns></returns>
+        public static string GetIniFileValue(string section, string key)
+        {
+            return GetIniFileValue(section, key, GetIniFilePath());
+        }
+        /// <summary>
+        /// 取得設定值
+        /// </summary>
+        /// <param name="section">設定檔section值</param>
+        /// <param name="key">設定檔key值</param>
+        /// <param name="path">自訂設定檔位置</param>
+        /// <returns></returns>
+        public static string GetIniFileValue(string section, string key, string path)
         {
             try
             {
-                string server, db, userid, password;
-                if (string.Compare(Path.GetExtension(iniPath), ".xml", true) == 0)
+                if (string.Compare(Path.GetExtension(path), ".xml", true) == 0)
                 {
-                    //by .xml
                     XmlHelper xmlHelper = new XmlHelper();
-                    IList list = xmlHelper.Read(iniPath, "SETTINGS/" + section);
-                    server = xmlHelper.Find(list, "servername").ToString();
-                    db = xmlHelper.Find(list, "datasource").ToString();
-                    userid = xmlHelper.Find(list, "userid").ToString();
-                    password = xmlHelper.Find(list, "Password").ToString();
+                    IList list = xmlHelper.Read(path, "SETTINGS/" + section);
+                    return xmlHelper.Find(list, key).ToString();
                 }
                 else
                 {
-                    //by .ini
-                    server = getIniFileValue(section, "servername", iniPath);
-                    db = getIniFileValue(section, "datasource", iniPath);
-                    userid = getIniFileValue(section, "userid", iniPath);
-                    password = getIniFileValue(section, "Password", iniPath);
+                    StringBuilder output = new StringBuilder(255);
+                    GetPrivateProfileString(section, key, "", output, 255, path);
+                    return output.ToString();
                 }
-
-                return @"Data Source =" + server
-                         + "; Initial Catalog = " + db
-                         + "; Integrated Security = false;User ID = " + userid
-                         + "; Password = '" + password + "';";
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                LogHelper.Write("[IniHelper] getConnectionString error!!");
-                throw new Exception(ex.Message);
+                LogHelper.Write("[IniHelper] GetIniFileValue error!!");
+                throw new Exception(e.Message);
             }
         }
 
@@ -71,21 +87,6 @@ namespace CommonLibrary
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
-
-        public static string getIniFileValue(string section, string key, string path)
-        {
-            try
-            {
-                StringBuilder output = new StringBuilder(255);
-                GetPrivateProfileString(section, key, "", output, 255, path);
-                return output.ToString();
-            }
-            catch (Exception e)
-            {
-                LogHelper.Write("[IniHelper] getIniFileValue error!!");
-                throw new Exception(e.Message);
-            }
-        }
         #endregion
 
     }

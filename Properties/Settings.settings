@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CommonLibrary.Properties" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="IniPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">/Setting.ini</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>
