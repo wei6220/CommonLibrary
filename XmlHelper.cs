@@ -10,7 +10,7 @@ using System.Xml;
 namespace CommonLibrary
 {
     /// <summary>
-    /// 協助處理Xml讀寫作業
+    /// Xml讀寫元件
     /// </summary>
     public class XmlHelper
     {
