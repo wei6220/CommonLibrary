@@ -135,7 +135,13 @@ namespace CommonLibrary
             }
             return NodeList;
         }
-
+        
+        /// <summary>
+        /// 找尋列表中的節點 
+        /// </summary>
+        /// <param name="TargetList"></param>
+        /// <param name="TargetValue"></param>
+        /// <returns></returns>
         public string Find(IList TargetList, string TargetValue)
         {
             foreach (KeyValuePair<string, object> item in TargetList)
