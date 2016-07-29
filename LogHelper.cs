@@ -7,6 +7,9 @@ using System.IO;
 
 namespace CommonLibrary
 {
+    /// <summary>
+    /// log讀取元件
+    /// </summary>
     public class LogHelper
     {
         private static string _LogDirPath = System.AppDomain.CurrentDomain.BaseDirectory + @"\Log";
