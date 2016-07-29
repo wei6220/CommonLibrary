@@ -202,4 +202,3 @@ VendingMachineSample/packages/*
 
 # Merge file remains
 *.orig
-/InsydeConfigurationModule/install

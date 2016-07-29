@@ -65,7 +65,7 @@ namespace CommonLibrary.DBUtility
         /// </summary>
         /// <param name="SqlString">sql字串</param>
         /// <param name="SqlParams">參數</param>
-        /// <returns> 回傳List<Dictionary<string,object>> </returns>
+        /// <returns> 回傳List{Dictionary(string,object)} </returns>
         public IList QuerySql(string SqlString, List<IDbDataParameter> SqlParams)
         {
             return QuerySql(SqlString, SqlParams, null);
