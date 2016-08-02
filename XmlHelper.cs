@@ -30,7 +30,7 @@ namespace CommonLibrary
             }
             catch (Exception)
             {
-                LogHelper.Write("[XmlHelper]Xml file load error!!!");
+                LogHelper.Write("[XmlHelper]Xml file load error!!");
             }
             return xmlDoc.InnerXml;
         }
