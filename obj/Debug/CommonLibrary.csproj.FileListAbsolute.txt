@@ -1,6 +1,0 @@
-D:\CommonLibrary\bin\Debug\CommonLibrary.dll.config
-D:\CommonLibrary\bin\Debug\CommonLibrary.dll
-D:\CommonLibrary\bin\Debug\CommonLibrary.pdb
-D:\CommonLibrary\obj\Debug\CommonLibrary.dll
-D:\CommonLibrary\obj\Debug\CommonLibrary.pdb
-D:\CommonLibrary\bin\Debug\CommonLibrary.XML
