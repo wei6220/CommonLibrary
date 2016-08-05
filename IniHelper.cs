@@ -22,8 +22,8 @@ namespace CommonLibrary
         /// <returns></returns>
         public static string GetConfigSetting(string key)
         {
-            //return ConfigurationManager.AppSettings[key];
-            return "OK";
+            return ConfigurationManager.AppSettings[key];
+            //return "OK";
         }
         /// <summary>
         /// 取得初始設定檔路徑(預設key:IniPath)
