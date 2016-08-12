@@ -57,7 +57,34 @@ namespace CommonLibrary
                 }
             }
             catch (Exception ex) {
-                Write(ex.Message);
+                WriteException("[LogHelper]非預期錯誤 : \n" + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 紀錄LogHelper 非預期錯誤
+        /// </summary>
+        /// <param name="exceptionStr">非預期錯誤說明</param>
+        private static void WriteException(string exceptionStr)
+        {
+            try
+            {
+                if (!Directory.Exists(_LogDirPath))
+                    Directory.CreateDirectory(_LogDirPath);
+
+                StreamWriter sw;
+                lock (_lockWrite)
+                {
+                    if (!File.Exists(_LogDirPath + @"\" + _LogFileName))
+                        sw = File.CreateText(_LogDirPath + @"\" + _LogFileName);
+                    else
+                        sw = new StreamWriter(_LogDirPath + @"\" + _LogFileName, true);
+                    sw.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + " || " + exceptionStr);
+                    sw.Close();
+                }
+            }
+            catch (Exception)
+            {
             }
         }
     }
