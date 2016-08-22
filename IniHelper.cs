@@ -11,6 +11,9 @@ using System.Collections;
 
 namespace CommonLibrary
 {
+    /// <summary>
+    /// 設定檔讀取元件
+    /// </summary>
     public class IniHelper
     {
         private static string _DefaultIniPathKey = "IniPath";

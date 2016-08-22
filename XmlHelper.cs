@@ -10,7 +10,7 @@ using System.Xml;
 namespace CommonLibrary
 {
     /// <summary>
-    /// Xml讀寫元件5
+    /// Xml讀寫元件
     /// </summary>
     public class XmlHelper
     {
@@ -91,10 +91,10 @@ namespace CommonLibrary
             return (IList)ResolveNode(nodes);
         }
         /// <summary>
-        /// 讀取xml字串，並轉出xml字串
+        /// 自傳入的xml字串內，擷取子節點字串
         /// </summary>
         /// <param name="XmlStr">xml字串</param>
-        /// <param name="XPath">自訂節點</param>
+        /// <param name="XPath">欲擷取的節點</param>
         /// <returns>string</returns>
         public string ExtractXml(string XmlStr, string XPath)
         {
@@ -116,7 +116,11 @@ namespace CommonLibrary
                 xml += node.InnerXml;
             return xml;
         }
-
+        /// <summary>
+        /// 解析節點
+        /// </summary>
+        /// <param name="nodes">節點List</param>
+        /// <returns>object(格式: List{keyvalue})</returns>
         private object ResolveNode(XmlNodeList nodes)
         {
             List<object> NodeList = new List<object>();
@@ -135,13 +139,13 @@ namespace CommonLibrary
             }
             return NodeList;
         }
-        
+
         /// <summary>
-        /// 找尋列表中的節點 
+        /// 找尋List中的節點 
         /// </summary>
-        /// <param name="TargetList"></param>
-        /// <param name="TargetValue"></param>
-        /// <returns></returns>
+        /// <param name="TargetList">target source</param>
+        /// <param name="TargetValue">target key</param>
+        /// <returns>target value(依第一次找的回傳)</returns>
         public string Find(IList TargetList, string TargetValue)
         {
             foreach (KeyValuePair<string, object> item in TargetList)
