@@ -57,6 +57,8 @@ namespace CommonLibrary
             try
             {
                 xmlDoc.Load(Path);
+                XmlNodeList nodes = xmlDoc.SelectNodes(xPath);
+                return (IList)ResolveNode(nodes);
             }
             catch (Exception ex)
             {
@@ -64,8 +66,6 @@ namespace CommonLibrary
                 LogHelper.Write(ex.Message);
                 throw new Exception(ex.Message);
             }
-            XmlNodeList nodes = xmlDoc.SelectNodes(xPath);
-            return (IList)ResolveNode(nodes);
         }
         /// <summary>
         /// 讀取xml字串，並轉出list
@@ -81,14 +81,14 @@ namespace CommonLibrary
             try
             {
                 xmlDoc.LoadXml(XmlStr);
+                XmlNodeList nodes = xmlDoc.SelectNodes(XPath);
+                return (IList)ResolveNode(nodes);
             }
             catch (Exception ex)
             {
                 LogHelper.Write("[XmlHelper] ReadXml error!!");
                 throw new Exception(ex.Message);
             }
-            XmlNodeList nodes = xmlDoc.SelectNodes(XPath);
-            return (IList)ResolveNode(nodes);
         }
         /// <summary>
         /// 自傳入的xml字串內，擷取子節點字串
@@ -134,7 +134,12 @@ namespace CommonLibrary
                 if (node.HasChildNodes)
                     NodeValue = ResolveNode(node.ChildNodes);
                 else
-                    return node.Value;
+                {
+                    if (node.Value == null)
+                        NodeValue = "";
+                    else
+                        return node.Value;
+                }
                 NodeList.Add(new KeyValuePair<string, object>(NodeName, NodeValue));
             }
             return NodeList;
