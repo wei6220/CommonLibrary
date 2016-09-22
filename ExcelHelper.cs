@@ -10,9 +10,14 @@ using System.IO;
 using CommonLibrary.Extensions;
 using ClosedXML.Excel;
 using System.ComponentModel;
+using LinqToExcel;
+using Remotion;
 
 namespace CommonLibrary
 {
+    /// <summary>
+    /// excel存取元件
+    /// </summary>
     public class ExcelHelper
     {
         private int _defaultWidth = 50;
@@ -35,49 +40,146 @@ namespace CommonLibrary
         public DataSet Read(string filePath,bool isHDR)
         {
             DataSet ds = new DataSet();
-            using (OleDbConnection conn = new OleDbConnection(GetConnectionString(filePath, isHDR)))
+            
+            //OleDB
+            //using (OleDbConnection conn = new OleDbConnection(GetConnectionString(filePath, isHDR)))
+            //{
+            //    conn.Open();
+            //    try
+            //    {
+            //        DataTable SchemaDT = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+            //        foreach (DataRow r in SchemaDT.Rows)
+            //        {
+            //            using (OleDbDataAdapter dr = new OleDbDataAdapter("select * from [" + r["TABLE_NAME"].ToString() + "]", conn))
+            //            {
+            //                dr.Fill(ds, r["TABLE_NAME"].ToString());
+            //            }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogHelper.Write(ex.Message);
+            //    }
+            //}
+
+            ExcelQueryFactory excel = new ExcelQueryFactory(filePath);
+            DataTable dt;
+            foreach (var sheetname in excel.GetWorksheetNames())
             {
-                conn.Open();
-                try
+                dt = new DataTable();
+                if (isHDR)
                 {
-                    DataTable SchemaDT = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-                    foreach (DataRow r in SchemaDT.Rows)
+                    var worksheet = excel.Worksheet(sheetname);
+                    var query = from row in worksheet select row;
+                    var columnName = excel.GetColumnNames(sheetname);
+                    //建立欄位名稱
+                    foreach (var col in columnName)
+                        dt.Columns.Add(col.ToString());
+                    //寫入資料到資料列
+                    foreach (Row item in query)
                     {
-                        using (OleDbDataAdapter dr = new OleDbDataAdapter("select * from [" + r["TABLE_NAME"].ToString() + "]", conn))
+                        dt.NewRow();
+                        object[] cell = new object[columnName.Count()];
+                        int idx = 0;
+                        foreach (var col in columnName)
                         {
-                            dr.Fill(ds, r["TABLE_NAME"].ToString());
+                            cell[idx] = item[col].Value;
+                            idx++;
                         }
+                        dt.Rows.Add(cell);
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogHelper.Write(ex.Message);
+                else {
+                    var worksheet = excel.WorksheetNoHeader(sheetname);
+                    var query = from row in worksheet select row;
+                    var columnName = excel.GetColumnNames(sheetname);
+                    //建立欄位名稱
+                    foreach (var col in columnName)
+                        dt.Columns.Add("");
+                    //寫入資料到資料列
+                    foreach (RowNoHeader item in query)
+                    {
+                        dt.NewRow();
+                        object[] cell = new object[columnName.Count()];
+                        int idx = 0;
+                        for (int i = 0; i < columnName.Count(); i++)
+                        {
+                            cell[idx] = item[i].Value;
+                            idx++;
+                        }
+                        dt.Rows.Add(cell);
+                    }
                 }
+                ds.Tables.Add(dt);
             }
+
             return ds;
         }
 
+        /// <summary>
+        /// 讀取excel檔單一sheet
+        /// </summary>
+        /// <param name="filePath">檔案路徑</param>
+        /// <param name="sheetName">sheet名稱</param>
+        /// <returns>DataTable</returns>
         public DataTable Read(string filePath, string sheetName)
         {
             return Read(filePath, sheetName, true);
         }
+        /// <summary>
+        /// (Read 多載+1) 
+        /// </summary>
+        /// <param name="filePath">檔案路徑</param>
+        /// <param name="sheetName">sheet名稱</param>
+        /// <param name="isHDR"></param>
+        /// <returns>DataTable</returns>
         public DataTable Read(string filePath, string sheetName, bool isHDR)
         {
+            ExcelQueryFactory excel = new ExcelQueryFactory(filePath);
             DataTable dt = new DataTable();
             dt.TableName = sheetName;
-            using (OleDbConnection conn = new OleDbConnection(GetConnectionString(filePath, isHDR)))
+            if (isHDR)
             {
-                conn.Open();
-                try
+                var worksheet = excel.Worksheet(sheetName);
+                var query = from row in worksheet select row;
+                var columnName = excel.GetColumnNames(sheetName);
+                //建立欄位名稱
+                foreach (var col in columnName)
+                    dt.Columns.Add(col.ToString());
+                //寫入資料到資料列
+                foreach (Row item in query)
                 {
-                    using (OleDbDataAdapter dr = new OleDbDataAdapter("select * from [" + sheetName + "$]", conn))
+                    dt.NewRow();
+                    object[] cell = new object[columnName.Count()];
+                    int idx = 0;
+                    foreach (var col in columnName)
                     {
-                        dr.Fill(dt);
+                        cell[idx] = item[col].Value;
+                        idx++;
                     }
+                    dt.Rows.Add(cell);
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+                var worksheet = excel.WorksheetNoHeader(sheetName);
+                var query = from row in worksheet select row;
+                var columnName = excel.GetColumnNames(sheetName);
+                //建立欄位名稱
+                foreach (var col in columnName)
+                    dt.Columns.Add("");
+                //寫入資料到資料列
+                foreach (RowNoHeader item in query)
                 {
-                    LogHelper.Write(ex.Message);
+                    dt.NewRow();
+                    object[] cell = new object[columnName.Count()];
+                    int idx = 0;
+                    for (int i = 0; i < columnName.Count(); i++)
+                    {
+                        cell[idx] = item[i].Value;
+                        idx++;
+                    }
+                    dt.Rows.Add(cell);
                 }
             }
             return dt;
