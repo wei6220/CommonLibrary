@@ -57,7 +57,7 @@ namespace CommonLibrary
                 }
             }
             catch (Exception ex) {
-                WriteException("[LogHelper]非預期錯誤 : \n" + ex.Message);
+                WriteException("[Error][LogHelper>> Write]非預期錯誤 : \n" + ex.Message);
             }
         }
 

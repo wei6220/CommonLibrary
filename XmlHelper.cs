@@ -28,9 +28,10 @@ namespace CommonLibrary
             {
                 xmlDoc.Load(Path);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                LogHelper.Write("[XmlHelper]Xml file load error!!");
+                LogHelper.Write("[Error][CommonLibrary>> XmlHelper>> Load]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]XmlHelper Load failed!!");
             }
             return xmlDoc.InnerXml;
         }
@@ -62,9 +63,8 @@ namespace CommonLibrary
             }
             catch (Exception ex)
             {
-                LogHelper.Write("[XmlHelper] Read error!!");
-                LogHelper.Write(ex.Message);
-                throw new Exception(ex.Message);
+                LogHelper.Write("[Error][CommonLibrary>> XmlHelper>> Read]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]XmlHelper Read failed!!");
             }
         }
         /// <summary>
@@ -86,8 +86,8 @@ namespace CommonLibrary
             }
             catch (Exception ex)
             {
-                LogHelper.Write("[XmlHelper] ReadXml error!!");
-                throw new Exception(ex.Message);
+                LogHelper.Write("[Error][CommonLibrary>> XmlHelper>> ReadXml]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]XmlHelper ReadXml failed!!");
             }
         }
         /// <summary>
@@ -106,9 +106,9 @@ namespace CommonLibrary
             {
                 xmlDoc.LoadXml(XmlStr);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                LogHelper.Write("[XmlHelper]ExtractXml error!!");
+                LogHelper.Write("[Error][CommonLibrary>> XmlHelper>> ExtractXml]\n" + ex.Message);
             }
             XmlNodeList nodes = xmlDoc.SelectNodes(XPath);
             string xml = "";

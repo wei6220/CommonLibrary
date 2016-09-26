@@ -115,22 +115,106 @@ namespace CommonLibrary
             //    ds.Tables.Add(dt);
             //}
             #endregion
-        
-            IWorkbook wb;
-            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-            {
-                FileInfo info = new FileInfo(filePath);
-                if (info.Extension == ".xlsx")
-                    wb = new XSSFWorkbook(file);
-                else
-                    wb = new HSSFWorkbook(file);
-            }
 
-            DataTable dt;
-            for (int i = 0; i < wb.NumberOfSheets; ++i)
+            IWorkbook wb;
+            try
             {
-                dt = new DataTable();
-                ISheet sheet = wb.GetSheetAt(i);
+                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    FileInfo info = new FileInfo(filePath);
+                    if (info.Extension == ".xlsx")
+                        wb = new XSSFWorkbook(file);
+                    else
+                        wb = new HSSFWorkbook(file);
+                }
+
+                DataTable dt;
+                for (int i = 0; i < wb.NumberOfSheets; ++i)
+                {
+                    dt = new DataTable();
+                    ISheet sheet = wb.GetSheetAt(i);
+                    dt.TableName = sheet.SheetName;
+                    int firstRowindex = 0;
+                    int colMaxCount = sheet.GetRow(firstRowindex) == null ? 1 : sheet.GetRow(firstRowindex).LastCellNum;
+                    if (isHDR)
+                    {
+                        for (int c = 0; c < colMaxCount; c++)
+                            dt.Columns.Add((sheet.GetRow(firstRowindex) == null || sheet.GetRow(firstRowindex).GetCell(c) == null)
+                                ? "" : sheet.GetRow(firstRowindex).GetCell(c).StringCellValue);
+                        firstRowindex++;
+                    }
+                    else
+                    {
+                        for (int c = 0; c < colMaxCount; c++)
+                            dt.Columns.Add("");
+                    }
+
+                    for (int r = firstRowindex; r <= sheet.LastRowNum; r++)
+                    {
+                        //columns ++
+                        if (sheet.GetRow(r) != null && sheet.GetRow(r).LastCellNum > colMaxCount)
+                        {
+                            colMaxCount = sheet.GetRow(r).LastCellNum;
+                            for (int c = dt.Columns.Count; c < colMaxCount; c++)
+                                dt.Columns.Add("");
+                        }
+
+                        dt.NewRow();
+                        object[] cell = new object[colMaxCount];
+                        int idx = 0;
+                        for (int c = 0; c < colMaxCount; c++)
+                        {
+                            cell[idx] = (sheet.GetRow(r) != null) ? sheet.GetRow(r).GetCell(c) : null;
+                            idx++;
+                        }
+                        dt.Rows.Add(cell);
+
+                    }
+                    ds.Tables.Add(dt);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write("[Error][CommonLibrary>> ExcelHelper>> Read]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]ExcelHelper Read failed!!");
+            }
+            return ds;
+        }
+
+        /// <summary>
+        /// 讀取excel檔單一sheet
+        /// </summary>
+        /// <param name="filePath">檔案路徑</param>
+        /// <param name="sheetName">sheet名稱</param>
+        /// <returns>DataTable</returns>
+        public DataTable Read(string filePath, string sheetName)
+        {
+            return Read(filePath, sheetName, true);
+        }
+        /// <summary>
+        /// (Read 多載+1) 
+        /// </summary>
+        /// <param name="filePath">檔案路徑</param>
+        /// <param name="sheetName">sheet名稱</param>
+        /// <param name="isHDR"></param>
+        /// <returns>DataTable</returns>
+        public DataTable Read(string filePath, string sheetName, bool isHDR)
+        {
+            DataTable dt = new DataTable();
+
+            IWorkbook wb;
+            try
+            {
+                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    FileInfo info = new FileInfo(filePath);
+                    if (info.Extension == ".xlsx")
+                        wb = new XSSFWorkbook(file);
+                    else
+                        wb = new HSSFWorkbook(file);
+                }
+
+                ISheet sheet = wb.GetSheet(sheetName);
                 dt.TableName = sheet.SheetName;
                 int firstRowindex = 0;
                 int colMaxCount = sheet.GetRow(firstRowindex) == null ? 1 : sheet.GetRow(firstRowindex).LastCellNum;
@@ -166,81 +250,12 @@ namespace CommonLibrary
                         idx++;
                     }
                     dt.Rows.Add(cell);
-
                 }
-                ds.Tables.Add(dt);
             }
-
-            return ds;
-        }
-
-        /// <summary>
-        /// 讀取excel檔單一sheet
-        /// </summary>
-        /// <param name="filePath">檔案路徑</param>
-        /// <param name="sheetName">sheet名稱</param>
-        /// <returns>DataTable</returns>
-        public DataTable Read(string filePath, string sheetName)
-        {
-            return Read(filePath, sheetName, true);
-        }
-        /// <summary>
-        /// (Read 多載+1) 
-        /// </summary>
-        /// <param name="filePath">檔案路徑</param>
-        /// <param name="sheetName">sheet名稱</param>
-        /// <param name="isHDR"></param>
-        /// <returns>DataTable</returns>
-        public DataTable Read(string filePath, string sheetName, bool isHDR)
-        {
-            DataTable dt = new DataTable();
-
-            IWorkbook wb;
-            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            catch (Exception ex)
             {
-                FileInfo info = new FileInfo(filePath);
-                if (info.Extension == ".xlsx")
-                    wb = new XSSFWorkbook(file);
-                else
-                    wb = new HSSFWorkbook(file);
-            }
-
-            ISheet sheet = wb.GetSheet(sheetName);
-            dt.TableName = sheet.SheetName;
-            int firstRowindex = 0;
-            int colMaxCount = sheet.GetRow(firstRowindex) == null ? 1 : sheet.GetRow(firstRowindex).LastCellNum;
-            if (isHDR)
-            {
-                for (int c = 0; c < colMaxCount; c++)
-                    dt.Columns.Add((sheet.GetRow(firstRowindex) == null || sheet.GetRow(firstRowindex).GetCell(c) == null)
-                        ? "" : sheet.GetRow(firstRowindex).GetCell(c).StringCellValue);
-                firstRowindex++;
-            }
-            else
-            {
-                for (int c = 0; c < colMaxCount; c++)
-                    dt.Columns.Add("");
-            }
-
-            for (int r = firstRowindex; r <= sheet.LastRowNum; r++)
-            {
-                //columns ++
-                if (sheet.GetRow(r) != null && sheet.GetRow(r).LastCellNum > colMaxCount)
-                {
-                    colMaxCount = sheet.GetRow(r).LastCellNum;
-                    for (int c = dt.Columns.Count; c < colMaxCount; c++)
-                        dt.Columns.Add("");
-                }
-
-                dt.NewRow();
-                object[] cell = new object[colMaxCount];
-                int idx = 0;
-                for (int c = 0; c < colMaxCount; c++)
-                {
-                    cell[idx] = (sheet.GetRow(r) != null) ? sheet.GetRow(r).GetCell(c) : null;
-                    idx++;
-                }
-                dt.Rows.Add(cell);
+                LogHelper.Write("[Error][CommonLibrary>> ExcelHelper>> Read]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]ExcelHelper Read failed!!");
             }
             return dt;
         }
@@ -252,63 +267,13 @@ namespace CommonLibrary
         /// <param name="savePath">輸出路徑</param>
         public void ConvertToExcel(DataTable SourceDT, string savePath)
         {
-            //建立Excel
-            XLWorkbook workbook = new XLWorkbook();
-            var sheet = workbook.Worksheets.Add(string.IsNullOrEmpty(SourceDT.TableName) ? "Sheet1" : SourceDT.TableName);
-            foreach (DataColumn col in SourceDT.Columns)
+            try
             {
-                //var header = sheet.Range("A1:C1");
-                var header = sheet.Cell(1, col.Ordinal + 1);
-                header.Value = col.ColumnName;
-                header.Style.Fill.BackgroundColor = XLColor.FromHtml("#f0f0f0");
-                //header.Style.Font.FontColor = XLColor.Yellow;
-                //header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                header.Style.Border.TopBorder = XLBorderStyleValues.Thin;
-                header.Style.Border.TopBorderColor = XLColor.LightGray;
-                header.Style.Border.RightBorder = XLBorderStyleValues.Thin;
-                header.Style.Border.RightBorderColor = XLColor.LightGray;
-                header.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
-                header.Style.Border.BottomBorderColor = XLColor.LightGray;
-                header.Style.Border.LeftBorder = XLBorderStyleValues.Thin;
-                header.Style.Border.LeftBorderColor = XLColor.LightGray;
-            }
-
-            int rowIdx = 2;
-            foreach (DataRow item in SourceDT.Rows)
-            {
-                foreach (DataColumn col in SourceDT.Columns)
+                //建立Excel
+                using (XLWorkbook workbook = new XLWorkbook())
                 {
-                    sheet.Cell(rowIdx, col.Ordinal + 1).Value = item[col.Ordinal];
-                }
-                rowIdx++;
-            }
-            
-            //文字置頂
-            sheet.Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
-            //自動換行
-            sheet.Style.Alignment.WrapText = true;
-            //自動伸縮欄寬
-            for (int i = 1; i <= sheet.ColumnCount(); i++)
-            {
-                sheet.Column(i).AdjustToContents();
-                if (sheet.Column(i).Width > _defaultWidth)
-                    sheet.Column(i).Width = _defaultWidth;
-            }
-            workbook.SaveAs(savePath);
-        }
-        /// <summary>
-        /// DataSet 轉出 excel
-        /// </summary>
-        /// <param name="SourceSet">DataSet</param>
-        /// <param name="savePath">輸出路徑</param>
-        public void ConvertToExcel(DataSet SourceSet, string savePath)
-        {
-            using (XLWorkbook workbook = new XLWorkbook())
-            {
-                foreach (DataTable SourceDT in SourceSet.Tables)
-                {
-                    var sheet = workbook.Worksheets.Add(SourceDT.TableName);
-                   
+                    //XLWorkbook workbook = new XLWorkbook();
+                    var sheet = workbook.Worksheets.Add(string.IsNullOrEmpty(SourceDT.TableName) ? "Sheet1" : SourceDT.TableName);
                     foreach (DataColumn col in SourceDT.Columns)
                     {
                         //var header = sheet.Range("A1:C1");
@@ -348,16 +313,84 @@ namespace CommonLibrary
                         if (sheet.Column(i).Width > _defaultWidth)
                             sheet.Column(i).Width = _defaultWidth;
                     }
-
-                    //TODO:Heigt取不到值
-                    //if (sheet.Row(10).Height > 30)
-                    //    sheet.Row(10).Height = 30;
-                   
+                    workbook.SaveAs(savePath);
                 }
-                workbook.SaveAs(savePath);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write("[Error][CommonLibrary>> ExcelHelper>> ConvertToExcel]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]ExcelHelper ConvertToExcel failed!!");
             }
         }
+        /// <summary>
+        /// DataSet 轉出 excel
+        /// </summary>
+        /// <param name="SourceSet">DataSet</param>
+        /// <param name="savePath">輸出路徑</param>
+        public void ConvertToExcel(DataSet SourceSet, string savePath)
+        {
+            try
+            {
+                using (XLWorkbook workbook = new XLWorkbook())
+                {
+                    foreach (DataTable SourceDT in SourceSet.Tables)
+                    {
+                        var sheet = workbook.Worksheets.Add(SourceDT.TableName);
 
+                        foreach (DataColumn col in SourceDT.Columns)
+                        {
+                            //var header = sheet.Range("A1:C1");
+                            var header = sheet.Cell(1, col.Ordinal + 1);
+                            header.Value = col.ColumnName;
+                            header.Style.Fill.BackgroundColor = XLColor.FromHtml("#f0f0f0");
+                            //header.Style.Font.FontColor = XLColor.Yellow;
+                            //header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                            header.Style.Border.TopBorder = XLBorderStyleValues.Thin;
+                            header.Style.Border.TopBorderColor = XLColor.LightGray;
+                            header.Style.Border.RightBorder = XLBorderStyleValues.Thin;
+                            header.Style.Border.RightBorderColor = XLColor.LightGray;
+                            header.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                            header.Style.Border.BottomBorderColor = XLColor.LightGray;
+                            header.Style.Border.LeftBorder = XLBorderStyleValues.Thin;
+                            header.Style.Border.LeftBorderColor = XLColor.LightGray;
+                        }
+
+                        int rowIdx = 2;
+                        foreach (DataRow item in SourceDT.Rows)
+                        {
+                            foreach (DataColumn col in SourceDT.Columns)
+                            {
+                                sheet.Cell(rowIdx, col.Ordinal + 1).Value = item[col.Ordinal];
+                            }
+                            rowIdx++;
+                        }
+
+                        //文字置頂
+                        sheet.Style.Alignment.Vertical = XLAlignmentVerticalValues.Top;
+                        //自動換行
+                        sheet.Style.Alignment.WrapText = true;
+                        //自動伸縮欄寬
+                        for (int i = 1; i <= sheet.ColumnCount(); i++)
+                        {
+                            sheet.Column(i).AdjustToContents();
+                            if (sheet.Column(i).Width > _defaultWidth)
+                                sheet.Column(i).Width = _defaultWidth;
+                        }
+
+                        //TODO:Heigt取不到值
+                        //if (sheet.Row(10).Height > 30)
+                        //    sheet.Row(10).Height = 30;
+
+                    }
+                    workbook.SaveAs(savePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write("[Error][CommonLibrary>> ExcelHelper>> ConvertToExcel]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]ExcelHelper ConvertToExcel failed!!");
+            }
+        }
         /// <summary>
         /// List 轉 DataTable
         /// TODO:可移出excel class使用
@@ -367,16 +400,24 @@ namespace CommonLibrary
         /// <returns>DataTable</returns>
         public DataTable ConvertToDataTable<T>(IList<T> data)
         {
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
             DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            foreach (T item in data)
+            try
             {
-                DataRow row = table.NewRow();
+                PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
                 foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                table.Rows.Add(row);
+                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                foreach (T item in data)
+                {
+                    DataRow row = table.NewRow();
+                    foreach (PropertyDescriptor prop in properties)
+                        row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                    table.Rows.Add(row);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write("[Error][CommonLibrary>> ExcelHelper>> ConvertToDataTable]\n" + ex.Message);
+                throw new Exception("[CommonLibrary]ExcelHelper ConvertToDataTable failed!!");
             }
             return table;
         }

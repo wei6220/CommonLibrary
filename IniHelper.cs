@@ -26,7 +26,6 @@ namespace CommonLibrary
         public static string GetConfigSetting(string key)
         {
             return ConfigurationManager.AppSettings[key];
-            //return "OK";
         }
         /// <summary>
         /// 取得初始設定檔路徑(預設key:IniPath)
@@ -81,8 +80,8 @@ namespace CommonLibrary
             }
             catch (Exception e)
             {
-                LogHelper.Write("[IniHelper] GetIniFileValue error!!");
-                throw new Exception(e.Message);
+                LogHelper.Write("[Error][CommonLibrary>> IniHelper>> GetIniFileValue]\n" + e.Message);
+                throw new Exception("[CommonLibrary]IniHelper GetIniFileValue failed!!");
             }
         }
 
