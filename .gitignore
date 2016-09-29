@@ -16,7 +16,8 @@
 x64/
 build/
 bld/
-[Bb]in/
+[Bb]in/[Rr]elease/
+[Bb]in/[Dd]ebug/
 [Oo]bj/
 Build_Output/
 .vs/
