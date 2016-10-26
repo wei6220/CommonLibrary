@@ -307,7 +307,7 @@ namespace CommonLibrary
                     //自動換行
                     sheet.Style.Alignment.WrapText = true;
                     //自動伸縮欄寬
-                    for (int i = 1; i <= sheet.ColumnCount(); i++)
+                    for (int i = 1; i <= SourceDT.Columns.Count; i++)
                     {
                         sheet.Column(i).AdjustToContents();
                         if (sheet.Column(i).Width > _defaultWidth)
@@ -370,7 +370,7 @@ namespace CommonLibrary
                         //自動換行
                         sheet.Style.Alignment.WrapText = true;
                         //自動伸縮欄寬
-                        for (int i = 1; i <= sheet.ColumnCount(); i++)
+                        for (int i = 1; i <= SourceDT.Columns.Count; i++)
                         {
                             sheet.Column(i).AdjustToContents();
                             if (sheet.Column(i).Width > _defaultWidth)

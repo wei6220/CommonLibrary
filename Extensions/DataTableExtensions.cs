@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary.Extensions
 {
+    /// <summary>
+    /// DataTable擴充方法
+    /// </summary>
     public static class DataTableExtensions
     {
         /// <summary>
