@@ -27,6 +27,7 @@ namespace CommonLibrary
         {
             return ConfigurationManager.AppSettings[key];
         }
+        
         /// <summary>
         /// 取得初始設定檔路徑(預設key:IniPath)
         /// </summary>
@@ -35,6 +36,7 @@ namespace CommonLibrary
         {
             return GetConfigSetting(_DefaultIniPathKey);
         }
+
         /// <summary>
         /// 取得初始設定檔路徑
         /// </summary>
@@ -44,6 +46,7 @@ namespace CommonLibrary
         {
             return GetConfigSetting(appKey);
         }
+
         /// <summary>
         /// 取得設定值(預設路徑)
         /// </summary>
@@ -54,6 +57,7 @@ namespace CommonLibrary
         {
             return GetIniFileValue(section, key, GetIniFilePath());
         }
+
         /// <summary>
         /// 取得設定值
         /// </summary>

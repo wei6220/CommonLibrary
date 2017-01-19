@@ -35,6 +35,7 @@ namespace CommonLibrary
             }
             return xmlDoc.InnerXml;
         }
+
         /// <summary>
         /// 讀取xml檔案，並轉出list (根結點)
         /// </summary>
@@ -44,6 +45,7 @@ namespace CommonLibrary
         {
             return Read(Path, null);
         }
+
         /// <summary>
         /// 讀取xml檔案，並轉出list
         /// </summary>
@@ -67,6 +69,7 @@ namespace CommonLibrary
                 throw new Exception("[CommonLibrary]XmlHelper Read failed!!");
             }
         }
+
         /// <summary>
         /// 讀取xml字串，並轉出list
         /// </summary>
@@ -90,6 +93,7 @@ namespace CommonLibrary
                 throw new Exception("[CommonLibrary]XmlHelper ReadXml failed!!");
             }
         }
+
         /// <summary>
         /// 自傳入的xml字串內，擷取子節點字串
         /// </summary>
@@ -116,6 +120,30 @@ namespace CommonLibrary
                 xml += node.InnerXml;
             return xml;
         }
+
+        /// <summary>
+        /// 找尋List中的節點 
+        /// </summary>
+        /// <param name="TargetList">target source</param>
+        /// <param name="TargetValue">target key</param>
+        /// <returns>target value(依第一次找的回傳)</returns>
+        public string Find(IList TargetList, string TargetValue)
+        {
+            foreach (KeyValuePair<string, object> item in TargetList)
+            {
+                if (item.Value.GetType() == typeof(string))
+                {
+                    if (string.Compare(item.Key.ToString(), TargetValue, true) == 0)
+                        return item.Value.ToString();
+                }
+                else
+                {
+                    return Find((IList)item.Value, TargetValue);
+                }
+            }
+            return "";
+        }
+
         /// <summary>
         /// 解析節點
         /// </summary>
@@ -143,29 +171,6 @@ namespace CommonLibrary
                 NodeList.Add(new KeyValuePair<string, object>(NodeName, NodeValue));
             }
             return NodeList;
-        }
-
-        /// <summary>
-        /// 找尋List中的節點 
-        /// </summary>
-        /// <param name="TargetList">target source</param>
-        /// <param name="TargetValue">target key</param>
-        /// <returns>target value(依第一次找的回傳)</returns>
-        public string Find(IList TargetList, string TargetValue)
-        {
-            foreach (KeyValuePair<string, object> item in TargetList)
-            {
-                if (item.Value.GetType() == typeof(string))
-                {
-                    if (string.Compare(item.Key.ToString(), TargetValue, true) == 0)
-                        return item.Value.ToString();
-                }
-                else
-                {
-                    return Find((IList)item.Value, TargetValue);
-                }
-            }
-            return "";
         }
 
     }

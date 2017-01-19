@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CommonLibrary.Extensions
 {
     /// <summary>
-    /// DataTable擴充方法
+    /// DataTable 擴充方法
     /// </summary>
     public static class DataTableExtensions
     {

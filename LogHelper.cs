@@ -8,7 +8,7 @@ using System.IO;
 namespace CommonLibrary
 {
     /// <summary>
-    /// log讀取元件
+    /// log讀寫元件
     /// </summary>
     public class LogHelper
     {

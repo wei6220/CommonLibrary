@@ -17,7 +17,7 @@ using NPOI.XSSF.UserModel;
 namespace CommonLibrary
 {
     /// <summary>
-    /// excel存取元件
+    /// excel讀寫元件
     /// </summary>
     public class ExcelHelper
     {
@@ -32,6 +32,7 @@ namespace CommonLibrary
         {
             return Read(filePath, true);
         }
+
         /// <summary>
         /// (Read 多載+1) 
         /// </summary>
@@ -191,6 +192,7 @@ namespace CommonLibrary
         {
             return Read(filePath, sheetName, true);
         }
+
         /// <summary>
         /// (Read 多載+1) 
         /// </summary>
@@ -323,6 +325,7 @@ namespace CommonLibrary
                 throw new Exception("[CommonLibrary]ExcelHelper ConvertToExcel failed!!");
             }
         }
+        
         /// <summary>
         /// DataSet 轉出 excel
         /// </summary>
@@ -392,6 +395,7 @@ namespace CommonLibrary
                 throw new Exception("[CommonLibrary]ExcelHelper ConvertToExcel failed!!");
             }
         }
+        
         /// <summary>
         /// List 轉 DataTable
         /// TODO:可移出excel class使用

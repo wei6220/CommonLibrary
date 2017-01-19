@@ -15,14 +15,15 @@ namespace CommonLibrary.DBUtility
     /// </summary>
     public class DbHelper : IDbHelper
     {
-        private string _ConnectionString;
+        private string _connectionString;
         /// <summary>
         /// init DbHelper
-        /// 預設DB連線字串=>設定檔section:DATABASE
+        /// 預設DB連線字串 => 設定檔section:DATABASE
         /// </summary>
+
         public DbHelper()
         {
-            _ConnectionString = GetConnectionString("DATABASE", IniHelper.GetIniFilePath());
+            _connectionString = GetConnectionString("DATABASE", IniHelper.GetIniFilePath());
         }
         /// <summary>
         /// init DbHelper
@@ -30,8 +31,9 @@ namespace CommonLibrary.DBUtility
         /// <param name="connectionString">自訂DB連線字串</param>
         public DbHelper(string connectionString)
         {
-            _ConnectionString = connectionString;
+            _connectionString = connectionString;
         }
+
         /// <summary>
         /// 執行sql command
         /// </summary>
@@ -40,23 +42,97 @@ namespace CommonLibrary.DBUtility
         /// <returns>影響筆數</returns>
         public int ExecuteSql(string SQLString, List<IDbDataParameter> SqlParams)
         {
-            using (SqlConnection connection = new SqlConnection(_ConnectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 if (connection.State != ConnectionState.Open)
                 {
                     connection.Open();
                 }
 
-                using (SqlCommand cmd = new SqlCommand(SQLString, connection))
+                using (SqlTransaction tran = connection.BeginTransaction())
                 {
                     try
                     {
-                        int rows = cmd.ExecuteNonQuery();
-                        return rows;
+                        int cnt = 0;
+                        using (SqlCommand cmd = new SqlCommand(SQLString, connection, tran))
+                        {
+                            if (SqlParams != null && SqlParams.Count() > 0)
+                            {
+                                foreach (SqlParameter para in SqlParams)
+                                {
+                                    //if (para.SqlDbType == SqlDbType.NVarChar)
+                                    //{
+                                    //    para.Value = HttpContext.Current.Server.HtmlDecode(para.Value.ToString());
+                                    //}
+                                    cmd.Parameters.Add(para);
+                                }
+                            }
+
+                            int rows = cmd.ExecuteNonQuery();
+                            cnt += rows;
+                        }
+
+                        tran.Commit();
+                        return cnt;
                     }
-                    catch (System.Data.SqlClient.SqlException e)
+                    catch (SqlException e)
                     {
-                        connection.Close();
+                        tran.Rollback();
+                        throw e;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 執行sql command(多筆)
+        /// </summary>
+        /// <param name="executeList">sql執行model</param>
+        /// <returns>影響筆數</returns>
+        public int ExecuteSql(List<ExecuteModel> executeList)
+        {
+            if (executeList == null || executeList.Count == 0)
+                return 0;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
+
+                using (SqlTransaction tran = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        int cnt = 0;
+
+                        foreach (var exe in executeList) {
+                            using (SqlCommand cmd = new SqlCommand(exe.SqlString, connection, tran))
+                            {
+                                if (exe.SqlParams != null && exe.SqlParams.Count() > 0)
+                                {
+                                    foreach (SqlParameter para in exe.SqlParams)
+                                    {
+                                        //if (para.SqlDbType == SqlDbType.NVarChar)
+                                        //{
+                                        //    para.Value = HttpContext.Current.Server.HtmlDecode(para.Value.ToString());
+                                        //}
+                                        cmd.Parameters.Add(para);
+                                    }
+                                }
+
+                                int rows = cmd.ExecuteNonQuery();
+                                cnt += rows;
+                            }
+                        }
+
+                        tran.Commit();
+                        return cnt;
+                    }
+                    catch (SqlException e)
+                    {
+                        tran.Rollback();
                         throw e;
                     }
                 }
@@ -73,24 +149,25 @@ namespace CommonLibrary.DBUtility
         {
             return QuerySql(SqlString, SqlParams, null);
         }
+
         /// <summary>
         /// 查詢sql command
         /// </summary>
         /// <param name="SqlString">sql字串</param>
         /// <param name="SqlParams">參數</param>
-        /// <param name="type">資料模型</param>
+        /// <param name="modelType">資料模型</param>
         /// <returns> List(資料模型) </returns>
-        public IList QuerySql(string SqlString, List<IDbDataParameter> SqlParams,Type type)
+        public IList QuerySql(string SqlString, List<IDbDataParameter> SqlParams,Type modelType)
         {
             IList data = new List<dynamic>();
-            using (SqlConnection connection = new SqlConnection(_ConnectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 try
                 {
                     if (connection.State == ConnectionState.Closed)
                     {
                         connection.Open();
-                        LogHelper.Write(string.Format("Open Connection :{0}", _ConnectionString));
+                        LogHelper.Write(string.Format("Open Connection :{0}", _connectionString));
                     }
                    
                     SqlCommand cmd = new SqlCommand(SqlString, connection);
@@ -111,11 +188,11 @@ namespace CommonLibrary.DBUtility
                         dynamic model;
                         while ((dr.Read()))
                         {
-                            if (type != null)
+                            if (modelType != null)
                             {
                                 //自訂類別
-                                model = Activator.CreateInstance(type);
-                                System.Reflection.PropertyInfo[] Propertys = type.GetProperties();
+                                model = Activator.CreateInstance(modelType);
+                                System.Reflection.PropertyInfo[] Propertys = modelType.GetProperties();
                                 foreach (System.Reflection.PropertyInfo pi in Propertys)
                                 {
                                     //檢視db是否該欄位
@@ -149,7 +226,6 @@ namespace CommonLibrary.DBUtility
             }
         }
 
-
         /// <summary>
         /// 取得連線字串
         /// </summary>
@@ -163,7 +239,8 @@ namespace CommonLibrary.DBUtility
                 //IniHelper.IniType type = (string.Compare(Path.GetExtension(iniPath), ".xml", true) == 0) ? IniHelper.IniType.xml : IniHelper.IniType.ini;
                 return @"Data Source =" + IniHelper.GetIniFileValue(section, "servername")
                          + "; Initial Catalog = " + IniHelper.GetIniFileValue(section, "datasource")
-                         + "; Integrated Security = false;User ID = " + IniHelper.GetIniFileValue(section, "userid")
+                         + "; Integrated Security = false"
+                         + "; User ID = " + IniHelper.GetIniFileValue(section, "userid")
                          + "; Password = '" + IniHelper.GetIniFileValue(section, "Password") + "';";
             }
             catch (Exception ex)
@@ -174,4 +251,20 @@ namespace CommonLibrary.DBUtility
         }
 
     }
+
+    /// <summary>
+    /// sql execute model
+    /// </summary>
+    public class ExecuteModel
+    {
+        /// <summary>
+        /// 執行字串
+        /// </summary>
+        public string SqlString { get; set; }
+        /// <summary>
+        /// 執行參數
+        /// </summary>
+        public List<IDbDataParameter> SqlParams { get; set; }
+    }
+
 }
