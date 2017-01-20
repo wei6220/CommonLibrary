@@ -18,8 +18,8 @@
     <HtmlHelpName>Documentation</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="bin\Debug\CommonLibrary.dll" xmlns="" />
-<DocumentationSource sourceFile="bin\Debug\CommonLibrary.xml" xmlns="" /></DocumentationSources>
+      <DocumentationSource sourceFile="bin\Release\CommonLibrary.dll" />
+<DocumentationSource sourceFile="bin\Release\CommonLibrary.xml" /></DocumentationSources>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->

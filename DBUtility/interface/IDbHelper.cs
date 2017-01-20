@@ -17,7 +17,14 @@ namespace CommonLibrary.DBUtility
         /// <param name="SqlParams">參數</param>
         /// <returns>影響筆數</returns>
         int ExecuteSql(string SQLString, List<IDbDataParameter> SqlParams);
-        
+
+        /// <summary>
+        /// 執行sql command(多筆)
+        /// </summary>
+        /// <param name="executeList">sql執行model</param>
+        /// <returns>影響筆數</returns>
+        int ExecuteSql(List<ExecuteModel> executeList);
+
         /// <summary>
         /// 查詢sql command
         /// </summary>
