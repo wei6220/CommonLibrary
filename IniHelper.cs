@@ -16,25 +16,15 @@ namespace CommonLibrary
     /// </summary>
     public class IniHelper
     {
-        private static string _DefaultIniPathKey = "IniPath";
-
-        /// <summary>
-        /// 取config appsetting設定值
-        /// </summary>
-        /// <param name="key">key值</param>
-        /// <returns></returns>
-        public static string GetConfigSetting(string key)
-        {
-            return ConfigurationManager.AppSettings[key];
-        }
-        
+        private static string _defaultIniPathKey = "IniPath";
+    
         /// <summary>
         /// 取得初始設定檔路徑(預設key:IniPath)
         /// </summary>
         /// <returns></returns>
-        public static string GetIniFilePath()
+        public static string GetFilePath()
         {
-            return GetConfigSetting(_DefaultIniPathKey);
+            return GetFilePath(_defaultIniPathKey);
         }
 
         /// <summary>
@@ -42,9 +32,9 @@ namespace CommonLibrary
         /// </summary>
         /// <param name="appKey">自訂key</param>
         /// <returns></returns>
-        public static string GetIniFilePath(string appKey)
+        public static string GetFilePath(string appKey)
         {
-            return GetConfigSetting(appKey);
+            return ConfigurationManager.AppSettings[appKey];
         }
 
         /// <summary>
@@ -53,9 +43,9 @@ namespace CommonLibrary
         /// <param name="section">設定檔section值</param>
         /// <param name="key">設定檔key值</param>
         /// <returns></returns>
-        public static string GetIniFileValue(string section, string key)
+        public static string GetValue(string section, string key)
         {
-            return GetIniFileValue(section, key, GetIniFilePath());
+            return GetValue(section, key, GetFilePath());
         }
 
         /// <summary>
@@ -65,7 +55,7 @@ namespace CommonLibrary
         /// <param name="key">設定檔key值</param>
         /// <param name="path">自訂設定檔位置</param>
         /// <returns></returns>
-        public static string GetIniFileValue(string section, string key, string path)
+        public static string GetValue(string section, string key, string path)
         {
             try
             {

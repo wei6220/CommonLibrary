@@ -20,10 +20,9 @@ namespace CommonLibrary.DBUtility
         /// init DbHelper
         /// 預設DB連線字串 => 設定檔section:DATABASE
         /// </summary>
-
         public DbHelper()
         {
-            _connectionString = GetConnectionString("DATABASE", IniHelper.GetIniFilePath());
+            _connectionString = GetConnectionString("DATABASE", IniHelper.GetFilePath());
         }
         /// <summary>
         /// init DbHelper
@@ -107,7 +106,8 @@ namespace CommonLibrary.DBUtility
                     {
                         int cnt = 0;
 
-                        foreach (var exe in executeList) {
+                        foreach (var exe in executeList)
+                        {
                             using (SqlCommand cmd = new SqlCommand(exe.SqlString, connection, tran))
                             {
                                 if (exe.SqlParams != null && exe.SqlParams.Count() > 0)
@@ -157,7 +157,7 @@ namespace CommonLibrary.DBUtility
         /// <param name="SqlParams">參數</param>
         /// <param name="modelType">資料模型</param>
         /// <returns> List(資料模型) </returns>
-        public IList QuerySql(string SqlString, List<IDbDataParameter> SqlParams,Type modelType)
+        public IList QuerySql(string SqlString, List<IDbDataParameter> SqlParams, Type modelType)
         {
             IList data = new List<dynamic>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -169,7 +169,7 @@ namespace CommonLibrary.DBUtility
                         connection.Open();
                         LogHelper.Write(string.Format("Open Connection :{0}", _connectionString));
                     }
-                   
+
                     SqlCommand cmd = new SqlCommand(SqlString, connection);
                     if (SqlParams != null && SqlParams.Count() > 0)
                     {
@@ -198,7 +198,7 @@ namespace CommonLibrary.DBUtility
                                     //檢視db是否該欄位
                                     for (int i = 0; i < dr.FieldCount; i++)
                                     {
-                                        if (string.Compare(dr.GetName(i),pi.Name,true)==0)
+                                        if (string.Compare(dr.GetName(i), pi.Name, true) == 0)
                                             pi.SetValue(model, dr[pi.Name]);
                                     }
                                 }
@@ -232,16 +232,16 @@ namespace CommonLibrary.DBUtility
         /// <param name="section">設定檔section</param>
         /// <param name="iniPath">設定檔位置</param>
         /// <returns></returns>
-        public static string GetConnectionString(string section, string iniPath)
+        private string GetConnectionString(string section, string iniPath)
         {
             try
             {
                 //IniHelper.IniType type = (string.Compare(Path.GetExtension(iniPath), ".xml", true) == 0) ? IniHelper.IniType.xml : IniHelper.IniType.ini;
-                return @"Data Source =" + IniHelper.GetIniFileValue(section, "servername")
-                         + "; Initial Catalog = " + IniHelper.GetIniFileValue(section, "datasource")
+                return @"Data Source =" + IniHelper.GetValue(section, "servername")
+                         + "; Initial Catalog = " + IniHelper.GetValue(section, "datasource")
                          + "; Integrated Security = false"
-                         + "; User ID = " + IniHelper.GetIniFileValue(section, "userid")
-                         + "; Password = '" + IniHelper.GetIniFileValue(section, "Password") + "';";
+                         + "; User ID = " + IniHelper.GetValue(section, "userid")
+                         + "; Password = '" + IniHelper.GetValue(section, "Password") + "';";
             }
             catch (Exception ex)
             {
