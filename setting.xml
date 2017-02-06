@@ -1,17 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SETTINGS>
-    <DATABASE>
-        <SERVERNAME>.\SQLEXPRESS</SERVERNAME>
-	    <DATASOURCE>InsydeBIOSConfigurationDB</DATASOURCE>
-	    <USERID>sa</USERID>
-	    <PASSWORD>admin</PASSWORD>
-    </DATABASE>
-    <INSYDECONFIGURATIONMODULE>
-        <LOGDIRPATH>~/Log</LOGDIRPATH>
-        <INSYDEROOTPATH>~/tool/insyde</INSYDEROOTPATH>
-        <INSYDETOOLPATH>\InsydeH2OUVE_x86_WINx64_100.00.16.11\H2OUVE-W-CONSOLEx64.exe</INSYDETOOLPATH>
-        <INSYDEWHITELISTPATH>\WhiteList.txt</INSYDEWHITELISTPATH>
-        <INSYDEBIOSWORKDIRNAME>temps</INSYDEBIOSWORKDIRNAME>
-        <INSYDEBIOSWORKDIRPATH>~/</INSYDEBIOSWORKDIRPATH>
-    </INSYDECONFIGURATIONMODULE>
+  <BASE>
+    <ISTEST>true</ISTEST>
+    <MAIL_PREFIX>【SW發送測試】</MAIL_PREFIX>
+  </BASE>
+  <SMTP>
+    <HOST>ms00.dfi.com.tw</HOST>
+    <PORT>25</PORT>
+    <ENABLESSL>false</ENABLESSL>
+    <FormAddress>jerry.chen@dfi.com</FormAddress>
+    <FormAlias></FormAlias>
+  </SMTP>
+  <DATABASE>
+    <SERVERNAME>.\SQLEXPRESS</SERVERNAME>
+    <DATASOURCE>EMS</DATASOURCE>
+    <USERID>sa</USERID>
+    <PASSWORD>admin</PASSWORD>
+  </DATABASE>
+  <INSYDECONFIGURATIONMODULE>
+    <LOGDIRPATH>~/Log/InsydeConfiguration</LOGDIRPATH>
+    <DBCONNECTIONSTRING>Server = tcp:dfidnndbserver.database.windows.net,1433; Initial Catalog = InsydeBIOSConfigurationDB; Persist Security Info = False; User ID = dfiadmin; Password = Dfi123456; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;</DBCONNECTIONSTRING>
+    <INSYDEROOTPATH>~/tool/insyde</INSYDEROOTPATH>
+    <INSYDETOOLPATH>\InsydeH2OUVE_x86_WINx64_100.00.16.11\H2OUVE-W-CONSOLEx64.exe</INSYDETOOLPATH>
+    <INSYDEWHITELISTPATH>\WhiteList.txt</INSYDEWHITELISTPATH>
+    <INSYDEBIOSWORKDIRNAME>Workspace/InsydeConfiguration</INSYDEBIOSWORKDIRNAME>
+    <INSYDEBIOSWORKDIRPATH>../</INSYDEBIOSWORKDIRPATH>
+  </INSYDECONFIGURATIONMODULE>
+  <INSYDECHANGELOGOMODULE>
+    <MODULENAME>InsydeChangeLogo</MODULENAME>
+    <LOGDIRPATH>~/Log/InsydeChangeLogo</LOGDIRPATH>
+    <DBCONNECTIONSTRING>Server = tcp:dfidnndbserver.database.windows.net,1433; Initial Catalog = InsydeBIOSConfigurationDB; Persist Security Info = False; User ID = dfiadmin; Password = Dfi123456; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;</DBCONNECTIONSTRING>
+    <INSYDEROOTPATH>~/tool/insyde</INSYDEROOTPATH>
+    <INSYDETOOLDIRPATH>\InsydeH2OEZE_x86_WIN_100.00.02.13</INSYDETOOLDIRPATH>
+    <INSYDETOOLPATH>\InsydeH2OEZE_x86_WIN_100.00.02.13\H2OEZE-W.exe</INSYDETOOLPATH>
+    <INSYDEBIOSWORKDIRNAME>Workspace/InsydeChangeLogo</INSYDEBIOSWORKDIRNAME>
+    <INSYDEBIOSWORKDIRPATH>../</INSYDEBIOSWORKDIRPATH>
+    <LOGOMAXIMUMWIDTH>1024</LOGOMAXIMUMWIDTH>
+    <LOGOMAXIMUMHEIGHT>768</LOGOMAXIMUMHEIGHT>
+  </INSYDECHANGELOGOMODULE>
+  <BOMCOMPAREMODULE>
+    <LOGDIRPATH>~/Log/BomCompare</LOGDIRPATH>
+    <WORKDIRPATH>../Workspace/BomCompare</WORKDIRPATH>
+  </BOMCOMPAREMODULE>
+  <SINGLESIGNON>
+    <LOGDIRPATH>~/Log/SingleSignOn</LOGDIRPATH>
+  </SINGLESIGNON>
+  <RFQ_T1>
+    <LOGDIRPATH>~/Log/RFQSystem</LOGDIRPATH>
+    <DBConnRFQSystem>Data Source=RD-880;DataBase=RFQSystem;Uid=RFQSystemAP;Pwd=Dfi123456789;</DBConnRFQSystem>
+    <DBConnMISOracle>user id=xmlweb;password=xmlweb;Pooling=false;data source=(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = testerp2.dfi.com.tw)(PORT=1521))(CONNECT_DATA =(FAILOVER_MODE=(TYPE=select)(METHOD=basic))(SERVER = DEDICATED)(SERVICE_NAME=testerp2)));</DBConnMISOracle>
+    <FilePath>\DesktopModules\MVC\RFQ_T1\ExcelData\RFQSystem</FilePath>
+    <UserGuidePath>\DesktopModules\MVC\RFQ_T1\Documentation\RFQSystem\DFI_RFQSystem_UserGuide_v1_0.pdf</UserGuidePath>
+  </RFQ_T1>
+  <EMSMODULE>
+    <API_IP>http://172.18.8.44:8089</API_IP>
+  </EMSMODULE>
 </SETTINGS>
