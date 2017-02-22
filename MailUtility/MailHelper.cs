@@ -28,7 +28,14 @@ namespace CommonLibrary.MailUtility
                 using (var mail = new MailMessage())
                 {
                     mail.From = formAddress;
-                    mail.To.Add(string.Join(",", toList.ToArray()));
+                    if (toList == null)
+                    {
+                        throw new Exception("Send To is Empty!!");
+                    }
+                    mail.To.Add(string.Join(",", toList.Where(e => !string.IsNullOrEmpty(e)).ToArray()));
+                    if (ccList != null)
+                        mail.CC.Add(string.Join(",", ccList.Where(e => !string.IsNullOrEmpty(e)).ToArray()));
+
                     mail.Subject = (IniHelper.GetValue(_baseSection, "ISTEST") != null && string.Compare(IniHelper.GetValue(_baseSection, "ISTEST"), "true", true) == 0
                         ? IniHelper.GetValue(_baseSection, "MAIL_PREFIX") : "") + subject;
                     mail.Body = content;
