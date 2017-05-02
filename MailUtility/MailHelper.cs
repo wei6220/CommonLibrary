@@ -48,13 +48,14 @@ namespace CommonLibrary.MailUtility
                         throw new Exception("Send To is Empty!!");
                     }
                     mail.To.Add(string.Join(",", toList.Where(e => !string.IsNullOrEmpty(e)).ToArray()));
+
                     if (ccList != null)
-                        mail.CC.Add(string.Join(",", ccList.Where(e => !string.IsNullOrEmpty(e)).ToArray()));
+                        ccList.ForEach(e => { if (IsMailFormatValid(e)) mail.CC.Add(e); });
                     if (bccList != null)
-                        mail.Bcc.Add(string.Join(",", bccList.Where(e => !string.IsNullOrEmpty(e)).ToArray()));
+                        bccList.ForEach(e => { if (IsMailFormatValid(e)) mail.Bcc.Add(e); });
 
                     var defaultBcc = IniHelper.GetValue(_baseSection, "MAIL_DEFAULT_BCC");
-                    if (defaultBcc != null && !string.IsNullOrWhiteSpace(defaultBcc))
+                    if (defaultBcc != null && !IsMailFormatValid(defaultBcc))
                         mail.Bcc.Add(defaultBcc);
 
                     //處理測試環境，預設為測試
@@ -78,6 +79,20 @@ namespace CommonLibrary.MailUtility
             {
                 LogHelper.Write(e.Message);
                 throw e;
+            }
+        }
+
+        private bool IsMailFormatValid(string mail)
+        {
+            try
+            {
+                MailAddress m = new MailAddress(mail);
+                return true;
+            }
+            catch (Exception e)
+            {
+                LogHelper.Write(e.Message);
+                return false;
             }
         }
 
