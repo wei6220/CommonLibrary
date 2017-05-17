@@ -55,7 +55,7 @@ namespace CommonLibrary.MailUtility
                         bccList.ForEach(e => { if (IsMailFormatValid(e)) mail.Bcc.Add(e); });
 
                     var defaultBcc = IniHelper.GetValue(_baseSection, "MAIL_DEFAULT_BCC");
-                    if (defaultBcc != null && !IsMailFormatValid(defaultBcc))
+                    if (defaultBcc != null && !string.IsNullOrWhiteSpace(defaultBcc) && !IsMailFormatValid(defaultBcc))
                         mail.Bcc.Add(defaultBcc);
 
                     //處理測試環境，預設為測試
