@@ -79,6 +79,44 @@ namespace CommonLibrary
             }
         }
 
+        /// <summary>
+        /// 取得設定值(預設路徑)
+        /// </summary>
+        /// <param name="section">設定檔section值</param>
+        /// <param name="key">設定檔key值</param>
+        /// <returns></returns>
+        public static IList GetValues(string section)
+        {
+            return GetValues(section, GetFilePath());
+        }
+
+        /// <summary>
+        /// 取得設定值
+        /// </summary>
+        /// <param name="section">設定檔section值</param>
+        /// <param name="key">設定檔key值</param>
+        /// <param name="path">自訂設定檔位置</param>
+        /// <returns></returns>
+        public static IList GetValues(string section, string path)
+        {
+            try
+            {
+                if (string.Compare(Path.GetExtension(path), ".xml", true) == 0)
+                {
+                    XmlHelper xmlHelper = new XmlHelper();
+                    IList list = xmlHelper.Read(path, section);
+                    return xmlHelper.Read(path, section);
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                LogHelper.Write("[Error][CommonLibrary>> IniHelper>> GetIniFileValue]\n" + e.Message);
+                throw new Exception("[CommonLibrary]IniHelper GetIniFileValue failed!!");
+            }
+        }
+
+
         #region #取.ini資料
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);

@@ -78,8 +78,12 @@ namespace CommonLibrary.Extensions
                     {
                         if (property.PropertyType == typeof(int))
                             property.SetValue(item, Convert.ToInt32(row[mappings[property.Name]]), null);
-                        else if (property.PropertyType == typeof(System.Nullable<int>))
+                        else if (property.PropertyType == typeof(int?))
                             property.SetValue(item, Convert.ToInt32(row[mappings[property.Name]]), null);
+                        else if (property.PropertyType == typeof(double))
+                            property.SetValue(item, Convert.ToDouble(row[mappings[property.Name]]), null);
+                        else if (property.PropertyType == typeof(double?))
+                            property.SetValue(item, Convert.ToDouble(row[mappings[property.Name]]), null);
                         else
                             property.SetValue(item, row[mappings[property.Name]], null);
                     }
