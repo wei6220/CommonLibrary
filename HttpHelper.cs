@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,6 +75,45 @@ namespace CommonLibrary
                 return null;
             }
         }
+
+        public string Post(string url, object parameter, ContnetTypeEnum type)
+        {
+            try
+            {
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "POST";
+
+                if (type == ContnetTypeEnum.Json)
+                    req.ContentType = "application/json";
+                else
+                    req.ContentType = "application/x-www-form-urlencoded";
+
+                var json = JsonConvert.SerializeObject(parameter);
+                byte[] data = Encoding.UTF8.GetBytes(json);
+                req.ContentLength = data.Length;
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    using (var body = req.GetRequestStream())
+                    {
+                        body.Write(Encoding.UTF8.GetBytes(json), 0, data.Length);
+                    }
+                }
+
+                using (var response = (HttpWebResponse)req.GetResponse())
+                {
+                    using (var stream = new StreamReader(response.GetResponseStream()))
+                    {
+                        return stream.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Write(ex.Message);
+                return null;
+            }
+        }
+
 
     }
 }
