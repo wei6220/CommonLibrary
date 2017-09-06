@@ -138,7 +138,10 @@ namespace CommonLibrary
                 }
                 else
                 {
-                    return Find((IList)item.Value, TargetValue);
+                    var val = Find((IList)item.Value, TargetValue);
+                    if (val != "")
+                        return val;
+                    //return Find((IList)item.Value, TargetValue);
                 }
             }
             return "";

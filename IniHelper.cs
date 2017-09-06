@@ -104,7 +104,6 @@ namespace CommonLibrary
                 if (string.Compare(Path.GetExtension(path), ".xml", true) == 0)
                 {
                     XmlHelper xmlHelper = new XmlHelper();
-                    IList list = xmlHelper.Read(path, section);
                     return xmlHelper.Read(path, section);
                 }
                 return null;
