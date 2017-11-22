@@ -5,6 +5,13 @@ namespace CommonLibrary.MailUtility
     public interface IMailHelper
     {
         void Send(string subject, string content, List<string> toList, List<string> ccList);
-        void Send(string subject, string content, List<string> toList, List<string> ccList, List<string> bccList);
+        void Send(string subject, string content, List<string> toList, List<string> ccList, List<string> bccList, Priority priority = Priority.Normal);
+    }
+
+    public enum Priority
+    {
+        Normal,
+        Low,
+        High
     }
 }

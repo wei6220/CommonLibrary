@@ -36,7 +36,7 @@ namespace CommonLibrary.MailUtility
             Send(subject, content, toList, ccList, null);
         }
 
-        public void Send(string subject, string content, List<string> toList, List<string> ccList, List<string> bccList)
+        public void Send(string subject, string content, List<string> toList, List<string> ccList, List<string> bccList, Priority priority = Priority.Normal)
         {
             try
             {
@@ -72,6 +72,20 @@ namespace CommonLibrary.MailUtility
                     mail.Subject = subject;
                     mail.Body = content;
                     mail.IsBodyHtml = true;
+
+                    switch (priority)
+                    {
+                        case Priority.Normal:
+                            mail.Priority = MailPriority.Normal;
+                            break;
+                        case Priority.High:
+                            mail.Priority = MailPriority.High;
+                            break;
+                        case Priority.Low:
+                            mail.Priority = MailPriority.Low;
+                            break;
+                    }
+
                     smtp.Send(mail);
                 }
             }
